@@ -1,23 +1,14 @@
-#!/usr/bin/python
-
-
-EMPTY_SLOT = ' '
-
-
-class Player:
-    def __init__(self, name, score, game_piece):
-        self.name = name
-        self.score = score
-        self.game_piece = game_piece
-
-
-class GamePiece:
-    def __init__(self, piece_char, piece_color):
-        self.piece_char = piece_char  # An 'x' or 'o'
-        self.piece_color = piece_color
-
-
 class GameBoard:
+    """Represents a connect four board.
+
+    Players X and O alternate between turns until a tie or a win.
+
+    Atrributes:
+        column_size: Integer representing column size.
+        row_size: Integer representing row size.
+    """
+    EMPTY_SLOT = ' '
+
     def __init__(self, column_size, row_size):
         """Construct object of type GameBoard."""
         self.column_size = column_size
@@ -28,7 +19,7 @@ class GameBoard:
         for row in range(self.row_size):
             board_row = []
             for col in range(self.column_size):
-                board_row.append(EMPTY_SLOT)
+                board_row.append(GameBoard.EMPTY_SLOT)
             self.data.append(board_row)
 
     def __repr__(self):
@@ -45,7 +36,7 @@ class GameBoard:
 
         # Print out column numbers, using mod 10 (for spacing issues).
         for num in range(self.column_size):
-            board_str += EMPTY_SLOT + str(num % 10)
+            board_str += GameBoard.EMPTY_SLOT + str(num % 10)
         board_str += '\n'
 
         return board_str
@@ -54,7 +45,7 @@ class GameBoard:
         """Add a game piece to game board, given a column and game_piece."""
         for row in reversed(range(self.row_size)):
             # Find first row with an empty slot.
-            if self.data[row][column] == EMPTY_SLOT:
+            if self.data[row][column] == GameBoard.EMPTY_SLOT:
                 self.data[row][column] = game_piece
                 break
 
@@ -62,7 +53,7 @@ class GameBoard:
         """Clears the gameboard of any game pieces intact."""
         for row in range(self.row_size):
             for col in range(self.column_size):
-                self.data[row][col] = EMPTY_SLOT
+                self.data[row][col] = GameBoard.EMPTY_SLOT
 
     def set_board(self, moves):
         """Prefill a game board given a string of column numbers."""
@@ -76,13 +67,13 @@ class GameBoard:
 
     def column_full(self, column):
         """A column is scanned to determine if there is room available."""
-        if self.data[0][column] != EMPTY_SLOT:
+        if self.data[0][column] != GameBoard.EMPTY_SLOT:
             return True
         return False
 
     def column_empty(self, column):
         """Is the column empty?"""
-        if self.data[self.row_size - 1][column] == EMPTY_SLOT:
+        if self.data[self.row_size - 1][column] == GameBoard.EMPTY_SLOT:
             return True
         return False
 
@@ -107,13 +98,13 @@ class GameBoard:
             pass
         else:
             for row in range(self.row_size):
-                if self.data[row][column] != EMPTY_SLOT:
-                    self.data[row][column] = EMPTY_SLOT
+                if self.data[row][column] != GameBoard.EMPTY_SLOT:
+                    self.data[row][column] = GameBoard.EMPTY_SLOT
                     break
 
     def has_won(self, game_piece):
         """Checks if there is four in a row of a given game_piece."""
-        # TODO: Ensure we have row and column sizes of >= 4.
+        # TODO: Ensure we have row and column sizes of >= 4 before calling.
 
         # Check Horizontally. Start check at lowest row.
         for row in reversed(range(self.row_size)):
