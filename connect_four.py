@@ -25,9 +25,9 @@ class GameBoard:
         self.data = []
 
         # Initialize board.
-        for r in range(self.row_size):
+        for row in range(self.row_size):
             board_row = []
-            for c in range(self.column_size):
+            for col in range(self.column_size):
                 board_row.append(EMPTY_SLOT)
             self.data.append(board_row)
 
@@ -44,8 +44,8 @@ class GameBoard:
         board_str += self.column_size * '--' + '-\n'
 
         # Print out column numbers, using mod 10 (for spacing issues).
-        for i in range(self.column_size):
-            board_str += EMPTY_SLOT + str(i % 10)
+        for num in range(self.column_size):
+            board_str += EMPTY_SLOT + str(num % 10)
         board_str += '\n'
 
         return board_str
@@ -64,10 +64,10 @@ class GameBoard:
             for col in range(self.column_size):
                 self.data[row][col] = EMPTY_SLOT
 
-    def set_board(self, move_string):
-        """Prefill a game board given a string of integers."""
+    def set_board(self, moves):
+        """Prefill a game board given a string of column numbers."""
         game_piece = 'X'
-        for ch in move_string:
+        for ch in moves:
             column = int(ch)
             if 0 <= column <= self.column_size:
                 self.add_piece(column, game_piece)
@@ -82,14 +82,13 @@ class GameBoard:
 
     def column_empty(self, column):
         """Is the column empty?"""
-        # Check the lowest row to determined if a game piece exists.
         if self.data[self.row_size - 1][column] == EMPTY_SLOT:
             return True
         return False
 
     def legal_move(self, column):
         """A move is legal if it has a valid column and has room available."""
-        if column < 0 or column > self.column_size:
+        if column < 0 or column > (self.column_size - 1):
             return False
         if self.column_full(column):
             return False
@@ -98,7 +97,7 @@ class GameBoard:
     def is_full(self):
         """Is the board full of game pieces?"""
         for col in range(self.column_size):
-            if self.column_full(col):
+            if not self.column_full(col):
                 return False
         return True
 
@@ -113,7 +112,7 @@ class GameBoard:
                     break
 
     def has_won(self, game_piece):
-        """Checks if a given game_piece has won. Hor, Ver, Diag."""
+        """Checks if there is four in a row of a given game_piece."""
         # TODO: Ensure we have row and column sizes of >= 4.
 
         # Check Horizontally. Start check at lowest row.
@@ -134,7 +133,7 @@ class GameBoard:
                 self.data[row + 3][col] == game_piece):
                     return True
 
-        # Check Diagonally: NE. Start at (row_size-1, 0).
+        # Check Diagonally: Start at (row_size-1, 0). north-east.
         for row in reversed(range(self.row_size - 3, self.row_size)):
             for col in range(self.column_size - 3):
                 if (self.data[row][col] == game_piece and
@@ -143,7 +142,7 @@ class GameBoard:
                 self.data[row - 3][col + 3] == game_piece):
                     return True
 
-        # Check Diagonally: NS. Start at (0,0).
+        # Check Diagonally: Start at (0,0). south-west.
         for row in range(self.row_size - 3):
             for col in range(self.column_size - 3):
                 if (self.data[row][col] == game_piece and
@@ -154,11 +153,41 @@ class GameBoard:
 
         return False
 
-# Debug purposes.
-game = GameBoard(7, 6)
-game.set_board('2334454551555')
+    def boot_game(self):
+        game_piece = 'X'
+        print "\nWelcome to connect4!!!"
 
-print game
+        while(True):
+            print self
+            column = raw_input('%s\'s choice: ' % (game_piece))
+            try:
+                column = int(column)
+            except ValueError:
+                print "Please enter a valid numeric column choice."
+                continue
 
-print 'wins for X', game.has_won('X')
-print 'wins for O', game.has_won('O')
+            if not self.legal_move(column):
+                print "Please retry your column number."
+                continue
+
+            self.add_piece(column, game_piece)
+
+            if self.has_won(game_piece):
+                print "\nYay! %s has won." % (game_piece)
+                print self
+                break
+
+            if self.is_full():
+                print "\nTie: Board is full."
+                print self
+                break
+
+            game_piece = 'O' if game_piece == 'X' else 'X'
+
+
+def main():
+    game = GameBoard(7, 6)
+    game.boot_game()
+
+if __name__ == '__main__':
+    main()
