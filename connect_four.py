@@ -1,3 +1,7 @@
+import getopt
+import sys
+
+
 class GameBoard:
     """Represents a connect four board.
 
@@ -104,7 +108,6 @@ class GameBoard:
 
     def has_won(self, game_piece):
         """Checks if there is four in a row of a given game_piece."""
-        # TODO: Ensure we have row and column sizes of >= 4 before calling.
 
         # Check Horizontally. Start check at lowest row.
         for row in reversed(range(self.row_size)):
@@ -176,9 +179,34 @@ class GameBoard:
             game_piece = 'O' if game_piece == 'X' else 'X'
 
 
-def main():
-    game = GameBoard(7, 6)
+def main(argv):
+    # Default board size.
+    column_size = 7
+    row_size = 6
+
+    try:
+        opts, args = getopt.getopt(argv, "c:r:", ["col=", "row="])
+    except getopt.GetoptError, exc:
+        print >> sys.stderr, exc.msg
+        sys.exit(2)
+
+    # Did the user enter valid number arguments?
+    try:
+        for opt, arg in opts:
+            if opt in ("-c", "--col"):
+                column_size = int(arg)
+            elif opt in ("-r", "--row"):
+                row_size = int(arg)
+        if (column_size < 4 or row_size < 4):
+            raise ValueError
+    except ValueError:
+        print >> sys.stderr, "Error: Invalid integer argument specified."
+        print >> sys.stderr, "Mininum length for row and col: 4."
+        print >> sys.stderr, "Usage: connect_four.py [-c col] [-r row]"
+        sys.exit(2)
+
+    game = GameBoard(column_size, row_size)
     game.boot_game()
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main(sys.argv[1:]))
